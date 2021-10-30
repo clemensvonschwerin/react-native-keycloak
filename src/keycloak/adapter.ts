@@ -16,6 +16,7 @@ import InAppBrowser from 'react-native-inappbrowser-reborn';
 import LocalStorage from './storage';
 import type { RNKeycloakInitOptions } from './types';
 import { fetchJSON } from './utils';
+import { Linking, Platform } from 'react-native';
 
 class RNAdapter implements KeycloakAdapter {
   private readonly client: Readonly<KeycloakInstance>;
@@ -43,7 +44,7 @@ class RNAdapter implements KeycloakAdapter {
   async login(options?: KeycloakLoginOptions): Promise<void> {
     const loginUrl = this.client.createLoginUrl(options);
 
-    if (await InAppBrowser.isAvailable()) {
+    if (Platform.OS != 'web' && await InAppBrowser.isAvailable()) {
       // See for more details https://github.com/proyecto26/react-native-inappbrowser#authentication-flow-using-deep-linking
       const res = await InAppBrowser.openAuth(
         loginUrl,
@@ -58,16 +59,14 @@ class RNAdapter implements KeycloakAdapter {
 
       throw new Error('Authentication flow failed');
     } else {
-      throw new Error('InAppBrowser not available');
-      // TODO: maybe!
-      //   Linking.openURL(loginURL);
+      Linking.openURL(loginUrl);
     }
   }
 
   async logout(options?: KeycloakLogoutOptions): Promise<void> {
     const logoutUrl = this.client.createLogoutUrl(options);
 
-    if (await InAppBrowser.isAvailable()) {
+    if (Platform.OS != 'web' && await InAppBrowser.isAvailable()) {
       // See for more details https://github.com/proyecto26/react-native-inappbrowser#authentication-flow-using-deep-linking
       const res = await InAppBrowser.openAuth(
         logoutUrl,
@@ -81,16 +80,14 @@ class RNAdapter implements KeycloakAdapter {
 
       throw new Error('Logout flow failed');
     } else {
-      throw new Error('InAppBrowser not available');
-      // TODO: maybe!
-      //   Linking.openURL(logoutUrl);
+      Linking.openURL(logoutUrl);
     }
   }
 
   async register(options?: KeycloakRegisterOptions) {
     const registerUrl = this.client.createRegisterUrl(options);
 
-    if (await InAppBrowser.isAvailable()) {
+    if (Platform.OS != 'web' && await InAppBrowser.isAvailable()) {
       // See for more details https://github.com/proyecto26/react-native-inappbrowser#authentication-flow-using-deep-linking
       const res = await InAppBrowser.openAuth(
         registerUrl,
@@ -105,9 +102,7 @@ class RNAdapter implements KeycloakAdapter {
 
       throw new Error('Registration flow failed');
     } else {
-      throw new Error('InAppBrowser not available');
-      // TODO: maybe!
-      //   Linking.openURL(registerUrl);
+      Linking.openURL(registerUrl);
     }
   }
 
